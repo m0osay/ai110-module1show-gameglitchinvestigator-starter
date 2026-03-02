@@ -25,13 +25,14 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
+- [x] Describe the game's purpose. — A number guessing game where the player tries to guess a secret number within a set number of attempts, with difficulty levels that change the range and attempt limit.
+- [x] Detail which bugs you found. — The hints were reversed (Too High said go higher, Too Low said go lower), the New Game button didn't reset status or history so the game got stuck after winning or losing, and changing difficulty had no effect on the range or attempts.
+- [x] Explain what fixes you applied. — Swapped the Too High/Too Low hint messages, added a difficulty change detection block to fully reset game state, fixed the New Game button to reset all session state, and replaced hardcoded "1 and 100" with dynamic range variables.
 
 ## 📸 Demo
 
-- [ ] [Insert a screenshot of your fixed, winning game here]
+![Fixed game screenshot](image.png)
+![Fixed game screenshot 2](img1.png)
 
 ## 🚀 Stretch Features
 
