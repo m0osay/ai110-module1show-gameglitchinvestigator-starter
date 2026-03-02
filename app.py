@@ -35,16 +35,16 @@ def check_guess(guess, secret):
 
     try:
         if guess > secret:
-            return "Too High", "📈 Go HIGHER!"
+            return "Too High", "📉 Go LOWER!"
         else:
-            return "Too Low", "📉 Go LOWER!"
+            return "Too Low", "📈 Go HIGHER!"
     except TypeError:
         g = str(guess)
         if g == secret:
             return "Win", "🎉 Correct!"
         if g > secret:
-            return "Too High", "📈 Go HIGHER!"
-        return "Too Low", "📉 Go LOWER!"
+            return "Too High", "📉 Go LOWER!"
+        return "Too Low", "📈 Go HIGHER!"
 
 
 def update_score(current_score: int, outcome: str, attempt_number: int):
@@ -92,6 +92,15 @@ st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
 if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
 
+# FIX: Claude identified that switching difficulty never reset the game state.
+# Added this block to detect a difficulty change and fully reset the session.
+if st.session_state.get("difficulty") != difficulty:
+    st.session_state.difficulty = difficulty
+    st.session_state.secret = random.randint(low, high)
+    st.session_state.attempts = 1
+    st.session_state.status = "playing"
+    st.session_state.history = []
+    
 if "attempts" not in st.session_state:
     st.session_state.attempts = 1
 
@@ -106,8 +115,10 @@ if "history" not in st.session_state:
 
 st.subheader("Make a guess")
 
+# FIX: Claude flagged that the range was hardcoded as "1 and 100" — replaced
+# with {low} and {high} so the message reflects the selected difficulty.
 st.info(
-    f"Guess a number between 1 and 100. "
+    f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
@@ -131,9 +142,14 @@ with col2:
 with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
+# FIX: Claude identified that New Game only reset attempts (to 0, off by one)
+# and secret — it missed status and history, leaving the game stuck after a win/loss.
+# Also corrected attempts to start at 1 to match initial game state.
 if new_game:
-    st.session_state.attempts = 0
-    st.session_state.secret = random.randint(1, 100)
+    st.session_state.attempts = 1
+    st.session_state.secret = random.randint(low, high)
+    st.session_state.status = "playing"
+    st.session_state.history = []
     st.success("New game started.")
     st.rerun()
 
